@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lit
   class LocalizationKeysController < ::Lit::ApplicationController
     before_action :find_localization_scope,
@@ -90,9 +92,9 @@ module Lit
         parts = @search_options[:key_prefix].split('.')
         @parent_prefix = parts[0, parts.length - 1].join('.')
       end
-      if defined?(Kaminari) and @scope.respond_to?(Kaminari.config.page_method_name)
+      if defined?(Kaminari) && @scope.respond_to?(Kaminari.config.page_method_name)
         @localization_keys = @scope.send(Kaminari.config.page_method_name, params[:page])
-      elsif defined?(WillPaginate) and @scope.respond_to?(:paginate)
+      elsif defined?(WillPaginate) && @scope.respond_to?(:paginate)
         @localization_keys = @scope.paginate(page: params[:page])
       else
         @localization_keys = @scope
@@ -100,7 +102,7 @@ module Lit
     end
 
     def valid_keys
-      %w[key key_prefix order]
+      %w[key key_prefix order utf8]
     end
 
     def grouped_localizations
@@ -128,7 +130,7 @@ module Lit
           Lit.init.cache.refresh_key("#{locale}.#{localization_key.localization_key}")
           ret = localization_key.localizations.where(locale_id: Lit.init.cache.find_locale(locale).id).first
         end
-        @_localization_for[key] = ret ? ret : false
+        @_localization_for[key] = ret || false
       else
         ret
       end
